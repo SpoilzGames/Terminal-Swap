@@ -13,6 +13,8 @@ public class GameM : MonoBehaviour
 
     public float _bagsSpeed;
 
+    public Material _onM, _offM;
+
     void Start()
     {
         _bags = new List<Transform>();
@@ -31,7 +33,11 @@ public class GameM : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit) && Input.GetMouseButtonDown(0))
             if (hit.transform.GetComponent<TrsInfo>() != null)
+            {
                 hit.transform.GetComponent<TrsInfo>()._on = true;
+                hit.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = _onM;
+                hit.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+            }
 
         foreach (TrsInfo trI in _trsI)
             if (trI._on)
@@ -63,6 +69,9 @@ public class GameM : MonoBehaviour
                         bag._inLinePos = trI._eLinePos + 1;
                         trI._bagI = -1;
                         trI._on = false;
+                        trI.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = _offM;
+                        trI.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
+
                     }
                     else
                         bag.transform.position += (pos2 - pos1).normalized * _bagsSpeed * Time.deltaTime;
