@@ -18,9 +18,8 @@ public class GameM : MonoBehaviour
     void Start()
     {
         _bags = new List<Transform>();
-        _bagTimers[0] = _bagFullTimer * Random.Range(0.10f, 0.70f);
-        _bagTimers[1] = _bagFullTimer * Random.Range(0.10f, 0.70f);
-        _bagTimers[2] = _bagFullTimer * Random.Range(0.10f, 0.70f);
+        _bagTimers[0] = _bagFullTimer * Random.Range(0.10f, 0.30f);
+        _bagTimers[1] = _bagFullTimer * Random.Range(0.20f, 0.50f);
     }
 
     public TextMeshProUGUI[] _tLCT;
@@ -117,13 +116,13 @@ public class GameM : MonoBehaviour
     public float[] _bagTimers;
     void BagGen()
     {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
         {
             _bagTimers[i] -= Time.deltaTime;
 
             if (_bagTimers[i] <= 0f && _bagCounters[i] > 0)
             {
-                _bagTimers[i] = _bagFullTimer * Random.Range(0.80f, 1.20f);
+                _bagTimers[i] = _bagFullTimer * Random.Range(0.60f, 1.20f);
                 _bagCounters[i]--;
 
                 _bags.Add(Instantiate(_bagPrefabs[i], _lineVs[_bagPrefabs[i].GetComponent<BagInfo>()._line].GetChild(0).position, Quaternion.Euler(Vector3.zero), _bagP).transform);
