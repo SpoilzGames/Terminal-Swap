@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameM : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class GameM : MonoBehaviour
 
     public Material _onM, _offM;
 
+    public RectTransform _bag1, _bag2;
+    public Vector3 _bag1PosS, _bag1PosE;
+    public Vector3 _bag2PosS, _bag2PosE;
+
     void Start()
     {
         _bags = new List<Transform>();
@@ -24,9 +29,16 @@ public class GameM : MonoBehaviour
 
     public TextMeshProUGUI[] _tLCT;
     public int[] _trueLinesCounter;
+
+    public AnimationCurve _showEffictCurve;
+    public float _effictTimer;
+    public Image _showEffictP;
+
     void Update()
     {
         BagGen();
+
+        _effictTimer += Time.deltaTime;
 
         Ray ray = _mCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -93,11 +105,24 @@ public class GameM : MonoBehaviour
                     {
                         bag._stop = true;
                         bag.gameObject.SetActive(false);
-                        if(bag._line == bag._trueLine)
+
+                        _showEffictP.color = Color.red;
+
+                        if (bag._line == bag._trueLine)
                         {
                             _trueLinesCounter[bag._line]--;
                             _tLCT[bag._line].text = 3 - _trueLinesCounter[bag._line] + "/3";
+
+                            if (bag._line == 0)
+                                _bag1.gameObject.SetActive(true);
+                            else
+                                _bag2.gameObject.SetActive(true);
+
+                            _showEffictP.color = Color.green;
                         }
+
+                        _showEffictP.gameObject.SetActive(true);
+                        _effictTimer = 0f;
                     }
                     else
                         bag._inLinePos = 0;
@@ -106,6 +131,36 @@ public class GameM : MonoBehaviour
                     bag.transform.position += (pos2 - pos1).normalized * _bagsSpeed * Time.deltaTime;
             }
         }
+
+        if (_bag1.gameObject.activeSelf)
+        {
+            _bag1.localPosition += (_bag1PosE - _bag1.localPosition).normalized * 2300f * Time.deltaTime;
+            if (Vector3.Distance(_bag1.localPosition, _bag1PosE) < 30f)
+            {
+                _bag1.gameObject.SetActive(false);
+                _bag1.localPosition = _bag1PosS;
+            }
+        }
+        if (_bag2.gameObject.activeSelf)
+        {
+            _bag2.localPosition += (_bag2PosE - _bag2.localPosition).normalized * 2300f * Time.deltaTime;
+            if (Vector3.Distance(_bag2.localPosition, _bag2PosE) < 30f)
+            {
+                _bag2.gameObject.SetActive(false);
+                _bag2.localPosition = _bag2PosS;
+            }
+        }
+
+        if (_showEffictP.gameObject.activeSelf)
+        {
+            Color c = _showEffictP.color;
+            c.a = _showEffictCurve.Evaluate(_effictTimer)/3f;
+            _showEffictP.color = c;
+
+            if (_effictTimer > 1f)
+                _showEffictP.gameObject.SetActive(false);
+        }
+
     }
 
 
